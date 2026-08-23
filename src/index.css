@@ -1,0 +1,263 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: "Inter", sans-serif;
+  background: #15171c;
+  color: #f1f2f4;
+  background-image:
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(255, 182, 39, 0.055),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 90% 40%,
+      rgba(47, 217, 196, 0.035),
+      transparent 30%
+    );
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: #ffb627;
+  color: #15171c;
+}
+
+/* =========================================
+   HERO REZERVASYON FORMU
+========================================= */
+
+.booking-input {
+  width: 100%;
+  height: 56px;
+  appearance: none;
+  border: 1px solid rgba(255, 182, 39, 0.38);
+  border-radius: 13px;
+  background-color: rgba(5, 8, 13, 0.9);
+  padding: 0 44px 0 46px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    0 8px 22px rgba(0, 0, 0, 0.12);
+  transition:
+    border-color 0.22s ease,
+    background-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.booking-input:hover {
+  border-color: rgba(255, 182, 39, 0.68);
+  background-color: rgba(8, 11, 17, 0.97);
+}
+
+.booking-input:focus {
+  border-color: #ffb627;
+  background-color: #090c12;
+  box-shadow:
+    0 0 0 4px rgba(255, 182, 39, 0.12),
+    0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+.booking-input::placeholder {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+select.booking-input {
+  cursor: pointer;
+  padding-right: 42px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #ffb627 50%),
+    linear-gradient(135deg, #ffb627 50%, transparent 50%);
+  background-position:
+    calc(100% - 19px) 25px,
+    calc(100% - 14px) 25px;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.booking-input option {
+  background: #111318;
+  color: #ffffff;
+}
+
+.booking-input[type="date"] {
+  color-scheme: dark;
+}
+
+.booking-input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.78;
+  filter: invert(79%) sepia(87%) saturate(1124%) hue-rotate(335deg)
+    brightness(104%) contrast(103%);
+}
+
+.booking-input:-webkit-autofill,
+.booking-input:-webkit-autofill:hover,
+.booking-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff;
+  caret-color: #ffffff;
+  -webkit-box-shadow: 0 0 0 1000px #090c12 inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* =========================================
+   PLAKA
+========================================= */
+
+.plaka-badge {
+  font-family: "Rajdhani", sans-serif;
+  letter-spacing: 0.12em;
+  background: #f8fafc;
+  color: #111827;
+  border: 2px solid #111827;
+  border-radius: 5px;
+}
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 182, 39, 0.35);
+}
+
+/* =========================================
+   MOBİL
+========================================= */
+
+@media (max-width: 1023px) {
+  .booking-input {
+    height: 50px;
+  }
+}
+
+@media (max-width: 640px) {
+  .booking-input {
+    height: 48px;
+    padding-left: 43px;
+    font-size: 12px;
+  }
+}
+.contact-input {
+  width: 100%; min-height: 50px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04);
+  padding: 0 15px; color: #fff; outline: none; transition: .2s ease;
+}
+.contact-input:focus { border-color: #ffb627; box-shadow: 0 0 0 4px rgba(255,182,39,.1); }
+.contact-input::placeholder { color: rgba(255,255,255,.32); }
+.contact-input option { background:#1b1e24; color:#fff; }
+
+/* =========================================
+   GİRİŞ VE KAYIT FORMU
+========================================= */
+.auth-input {
+  width: 100%;
+  height: 58px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.045);
+  padding: 0 18px 0 58px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  transition:
+    border-color 0.22s ease,
+    background-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.auth-input-password {
+  padding-right: 56px;
+}
+
+.auth-input:hover {
+  border-color: rgba(255, 182, 39, 0.34);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.auth-input:focus {
+  border-color: #ffb627;
+  background: rgba(255, 255, 255, 0.065);
+  box-shadow:
+    0 0 0 4px rgba(255, 182, 39, 0.11),
+    0 14px 35px rgba(0, 0, 0, 0.18);
+}
+
+.auth-input::placeholder {
+  color: rgba(255, 255, 255, 0.34);
+}
+
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff;
+  caret-color: #ffffff;
+  -webkit-box-shadow: 0 0 0 1000px #181b21 inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.auth-password-button {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  display: flex;
+  width: 28px;
+  height: 28px;
+  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.42);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.auth-password-button:hover {
+  background: rgba(255, 182, 39, 0.09);
+  color: #ffb627;
+}
+
+/* İkonlu iletişim ve rezervasyon alanları */
+.contact-input-icon {
+  padding-left: 58px !important;
+}
