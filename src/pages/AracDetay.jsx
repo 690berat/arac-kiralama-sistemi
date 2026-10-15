@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   BriefcaseBusiness,
@@ -35,6 +35,24 @@ export default function AracDetay({
   const [aktifResim, setAktifResim] = useState(0);
   const [tamEkranAcik, setTamEkranAcik] = useState(false);
 
+  useEffect(() => {
+    if (!tamEkranAcik) return;
+    const eskiOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const klavye = (event) => {
+      if (event.key === "Escape") setTamEkranAcik(false);
+      if (event.key === "ArrowLeft") setAktifResim((n) => (n - 1 + galeriUzunluk.current) % galeriUzunluk.current);
+      if (event.key === "ArrowRight") setAktifResim((n) => (n + 1) % galeriUzunluk.current);
+    };
+    window.addEventListener("keydown", klavye);
+    return () => {
+      document.body.style.overflow = eskiOverflow;
+      window.removeEventListener("keydown", klavye);
+    };
+  }, [tamEkranAcik]);
+
+  const galeriUzunluk = useMemo(() => ({ current: Math.max(1, arac?.resimler?.filter(Boolean)?.length || (arac?.resimUrl ? 1 : 1)) }), [arac]);
+
   const ortalama = useMemo(() => {
     if (!yorumlar.length) return "Yeni";
     return (
@@ -45,7 +63,7 @@ export default function AracDetay({
 
   if (!arac) {
     return (
-      <div className="min-h-screen bg-asfalt">
+      <div className="min-h-screen w-full min-w-0 overflow-x-hidden bg-asfalt">
         <Navbar git={git} kullanici={kullanici} cikisYap={cikisYap} />
         <div className="pt-40 text-center text-white">
           <h1 className="text-3xl font-bold">Araç bulunamadı</h1>
@@ -151,26 +169,30 @@ export default function AracDetay({
   };
 
   return (
-    <div className="min-h-screen bg-asfalt">
+    <div className="min-h-screen w-full min-w-0 overflow-x-hidden bg-asfalt">
       <Navbar git={git} kullanici={kullanici} cikisYap={cikisYap} />
 
-      <main className="pt-20">
-        <section className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
+      <main className="w-full min-w-0 pt-20">
+        <section className="mx-auto w-full max-w-7xl min-w-0 px-3 py-6 sm:px-4 sm:py-10 lg:px-8">
           <button onClick={() => git("/araclar")} className="flex items-center gap-2 text-sm text-metinSoft transition hover:text-amber">
             <ArrowLeft size={17} /> Araçlara dön
           </button>
 
-          <div className="mt-7 grid gap-8 lg:grid-cols-[1.25fr_.75fr]">
-            <div>
-              <div>
-                <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-panel">
+          <div className="mt-5 grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,.75fr)] lg:gap-8">
+            <div className="min-w-0 w-full">
+              <div className="min-w-0 w-full">
+                <div className="group relative w-full min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-panel sm:rounded-3xl">
                   <img
+                    onClick={() => setTamEkranAcik(true)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setTamEkranAcik(true); } }}
                     src={galeriResimleri[aktifResim]}
                     alt={`${arac.marka} ${arac.model} ${aktifResim + 1}. fotoğraf`}
-                    className="h-[360px] w-full object-cover transition duration-500 sm:h-[520px]"
+                    className="block h-[240px] w-full cursor-zoom-in object-contain bg-black/40 transition duration-500 min-[380px]:h-[280px] sm:h-[440px] lg:h-[520px] lg:object-cover"
                   />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/10" />
 
                   {galeriResimleri.length > 1 && (
                     <>
@@ -225,13 +247,13 @@ export default function AracDetay({
                 </div>
 
                 {galeriResimleri.length > 1 && (
-                  <div className="custom-scrollbar mt-4 flex gap-3 overflow-x-auto pb-2">
+                  <div className="custom-scrollbar mt-3 flex w-full min-w-0 max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-2 sm:gap-3">
                     {galeriResimleri.map((resim, index) => (
                       <button
                         key={`${resim}-${index}`}
                         type="button"
-                        onClick={() => setAktifResim(index)}
-                        className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-xl border-2 transition ${
+                        onClick={() => { setAktifResim(index); setTamEkranAcik(true); }}
+                        className={`relative h-16 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition sm:h-20 sm:w-28 ${
                           aktifResim === index
                             ? "border-amber shadow-[0_0_22px_rgba(255,182,39,0.18)]"
                             : "border-white/10 opacity-65 hover:border-white/30 hover:opacity-100"
@@ -248,20 +270,20 @@ export default function AracDetay({
                 )}
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="mt-5 grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
                 {teknikOzellikler.map(({ icon: Icon, baslik, deger }) => (
-                  <div key={baslik} className="rounded-2xl border border-white/10 bg-panel p-4">
+                  <div key={baslik} className="min-w-0 rounded-xl border border-white/10 bg-panel p-3 sm:rounded-2xl sm:p-4">
                     <Icon className="text-amber" />
                     <p className="mt-3 text-xs text-metinSoft">{baslik}</p>
-                    <p className="mt-1 font-bold text-white">{deger}</p>
+                    <p className="mt-1 break-words text-sm font-bold text-white sm:text-base">{deger}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <aside className="h-fit rounded-3xl border border-white/10 bg-panel p-7 lg:sticky lg:top-28">
+            <aside className="min-w-0 h-fit rounded-2xl border border-white/10 bg-panel p-4 sm:p-7 lg:sticky lg:top-28">
               <p className="text-xs font-bold uppercase tracking-[.2em] text-amber">{arac.sinif}</p>
-              <h1 className="mt-3 font-display text-4xl font-extrabold text-white">{arac.marka} {arac.model}</h1>
+              <h1 className="mt-3 break-words font-display text-3xl font-extrabold text-white sm:text-4xl">{arac.marka} {arac.model}</h1>
               <p className="mt-2 text-sm text-metinSoft">{arac.plaka} • {arac.yil} model • {kilometre.toLocaleString("tr-TR")} km</p>
 
               <div className="mt-4 flex items-center gap-2 text-sm">
@@ -272,7 +294,7 @@ export default function AracDetay({
 
               <div className="my-7 h-px bg-white/10" />
               <p className="text-xs uppercase tracking-widest text-metinSoft">Günlük fiyat</p>
-              <p className="mt-1 font-display text-4xl font-extrabold text-amber">
+              <p className="mt-1 break-words font-display text-3xl font-extrabold text-amber sm:text-4xl">
                 ₺{Number(arac.gunlukFiyat || 0).toLocaleString("tr-TR")} <span className="text-sm font-normal text-metinSoft">/ gün</span>
               </p>
 
@@ -281,13 +303,13 @@ export default function AracDetay({
                 <p className="flex gap-2"><ShieldCheck className="text-teal" size={18} /> Sigortalı ve bakımlı araç</p>
               </div>
 
-              <button disabled={arac.durum !== "musait"} onClick={() => git(`/rezervasyon/${arac.id}`)} className="mt-8 w-full rounded-xl bg-amber py-4 font-extrabold text-asfalt transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40">
+              <button disabled={arac.durum !== "musait"} onClick={() => git(`/rezervasyon/${arac.id}`)} className="mt-8 w-full min-w-0 whitespace-normal rounded-xl bg-amber px-3 py-4 text-center text-sm font-extrabold leading-5 text-asfalt transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40 sm:text-base">
                 {arac.durum === "musait" ? "Hemen Rezervasyon Yap" : "Şu Anda Müsait Değil"}
               </button>
             </aside>
           </div>
 
-          <section className="mt-12 rounded-3xl border border-white/10 bg-panel p-6 sm:p-8">
+          <section className="mt-8 min-w-0 rounded-2xl border border-white/10 bg-panel p-4 sm:mt-12 sm:rounded-3xl sm:p-8">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber">Araç donanımları</p>
@@ -317,8 +339,8 @@ export default function AracDetay({
             )}
           </section>
 
-          <section className="mt-12 grid gap-7 lg:grid-cols-[.75fr_1.25fr]">
-            <form onSubmit={gonder} className="h-fit rounded-3xl border border-white/10 bg-panel p-6">
+          <section className="mt-8 grid min-w-0 grid-cols-1 gap-5 lg:mt-12 lg:grid-cols-[minmax(0,.75fr)_minmax(0,1.25fr)] lg:gap-7">
+            <form onSubmit={gonder} className="h-fit min-w-0 rounded-2xl border border-white/10 bg-panel p-4 sm:p-6">
               <h2 className="text-xl font-bold text-white">Aracı Puanla</h2>
               <p className="mt-1 text-sm text-metinSoft">Deneyimini diğer müşterilerle paylaş.</p>
               <div className="mt-5 flex gap-2">
@@ -332,7 +354,7 @@ export default function AracDetay({
               <button className="mt-4 w-full rounded-xl bg-amber py-3 font-bold text-asfalt">{kullanici ? "Yorumu Gönder" : "Giriş Yap ve Yorumla"}</button>
             </form>
 
-            <div className="rounded-3xl border border-white/10 bg-panel p-6">
+            <div className="min-w-0 rounded-2xl border border-white/10 bg-panel p-4 sm:p-6">
               <h2 className="text-xl font-bold text-white">Müşteri Yorumları</h2>
               {yorumlar.length ? (
                 <div className="mt-5 space-y-4">
@@ -365,13 +387,13 @@ export default function AracDetay({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 p-4 backdrop-blur-lg"
+          className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden bg-black/95 px-2 py-14 backdrop-blur-lg sm:p-4"
           onClick={() => setTamEkranAcik(false)}
         >
           <button
             type="button"
             onClick={() => setTamEkranAcik(false)}
-            className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/10 text-2xl text-white"
+            className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/10 text-2xl text-white"
           >
             ×
           </button>
@@ -384,7 +406,7 @@ export default function AracDetay({
                   e.stopPropagation();
                   oncekiResim();
                 }}
-                className="absolute left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white sm:left-8"
+                className="absolute left-2 top-1/2 z-10 flex h-10 w-10 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white sm:left-8"
               >
                 <ChevronLeft size={25} />
               </button>
@@ -395,7 +417,7 @@ export default function AracDetay({
                   e.stopPropagation();
                   sonrakiResim();
                 }}
-                className="absolute right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white sm:right-8"
+                className="absolute right-2 top-1/2 z-10 flex h-10 w-10 sm:h-12 sm:w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white sm:right-8"
               >
                 <ChevronRight size={25} />
               </button>
@@ -405,11 +427,11 @@ export default function AracDetay({
           <img
             src={galeriResimleri[aktifResim]}
             alt={`${arac.marka} ${arac.model} tam ekran fotoğraf`}
-            className="max-h-[88vh] max-w-[92vw] rounded-2xl object-contain"
+            className="max-h-[calc(100dvh-120px)] max-w-[100%] rounded-lg object-contain sm:max-h-[88vh] sm:max-w-[92vw] sm:rounded-2xl"
             onClick={(e) => e.stopPropagation()}
           />
 
-          <span className="absolute bottom-5 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-white">
+          <span className="absolute bottom-6 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-white">
             {aktifResim + 1} / {galeriResimleri.length}
           </span>
         </div>
