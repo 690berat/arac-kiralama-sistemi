@@ -261,3 +261,11 @@ select.booking-input {
 .contact-input-icon {
   padding-left: 58px !important;
 }
+
+/* 2026: daha belirgin giriş alanları ve mobil admin deneyimi */
+.auth-input { min-height: 60px; border-color: rgba(255,255,255,.16); background: rgba(13,17,23,.78); }
+.auth-input:focus-visible { outline: 2px solid #ffb627; outline-offset: 2px; }
+@media (max-width: 640px) {
+  .auth-input { height: 54px; border-radius: 13px; }
+  .auth-password-button { right: 12px; }
+}

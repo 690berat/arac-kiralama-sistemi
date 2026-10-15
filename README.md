@@ -79,3 +79,8 @@ npm run preview
 Proje varsayılan olarak localStorage ile çalışır. Gerçek Firebase Authentication/Firestore için
 `src/firebaseConfig.example.js` dosyasındaki örneği kendi Firebase bilgilerinizle yapılandırmanız gerekir.
 Güvenli JWT sistemi için ayrıca bir backend sunucusu gerekir; yalnızca frontend içinde gizli anahtar tutulmamalıdır.
+
+
+## Supabase (güncel)
+
+Firebase yerine Supabase entegrasyonu kullanılır. Adım adım talimatlar için [KURULUM_SUPABASE.md](KURULUM_SUPABASE.md) dosyasını açın. Yukarıdaki eski Firebase açıklamaları geçerli değildir.

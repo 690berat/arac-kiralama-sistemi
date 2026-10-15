@@ -40,6 +40,8 @@ const MENULER = [
 export default function Admin({
   git,
   araclar,
+  bulutAktif = false,
+  bulutHata = "",
   rezervasyonlar,
   kullanici,
   cikisYap,
@@ -222,6 +224,9 @@ export default function Admin({
               />
             )}
 
+            {bulutHata && <div role="alert" className="mb-5 rounded-2xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-200">{bulutHata}</div>}
+            {!bulutAktif && <div className="mb-5 rounded-2xl border border-amber/30 bg-amber/10 p-4 text-sm text-amber">Demo modu: araç değişiklikleri bu tarayıcıda görünür. Tüm ziyaretçilere yayınlamak için KURULUM_SUPABASE.md içindeki Supabase kurulumunu tamamlayın.</div>}
+            {bulutAktif && <div className="mb-5 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-300">Canlı filo bağlantısı aktif • Araç değişiklikleri tüm ziyaretçilere otomatik yansır.</div>}
             {sekme === "araclar" && (
               <AracYonetimi
                 araclar={filtrelenmisAraclar}

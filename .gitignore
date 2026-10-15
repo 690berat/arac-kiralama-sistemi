@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.DS_Store
+*.local
+
+.env
+.env.local
+node_modules
+dist

@@ -13,19 +13,19 @@ import {
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-export default function Giris({ git, girisYap }) {
+export default function Giris({ git, girisYap, bulutAktif }) {
   const [hata, setHata] = useState("");
   const [sifreGoster, setSifreGoster] = useState(false);
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     setHata("");
 
     const fd = new FormData(e.currentTarget);
-    const sonuc = girisYap(fd.get("email"), fd.get("sifre"));
+    const sonuc = await girisYap(fd.get("kimlik"), fd.get("sifre"));
 
     if (!sonuc.basarili) {
-      setHata("E-posta veya şifre hatalı.");
+      setHata(sonuc.mesaj || "Kullanıcı adı veya şifre hatalı.");
       return;
     }
 
@@ -35,21 +35,21 @@ export default function Giris({ git, girisYap }) {
   return (
     <HesapSayfasi
       git={git}
-      rozet="RentCar Müşteri Girişi"
-      baslik="Yolculuğunuza kaldığınız yerden devam edin"
+      rozet="RentCar • Hesap Girişi"
+      baslik="Tekrar hoş geldiniz."
       aciklama="Rezervasyonlarınızı, favorilerinizi ve hesap bilgilerinizi tek ekrandan yönetin."
     >
       <form onSubmit={submit} className="space-y-5">
         <FormAlan
-          label="E-posta adresi"
-          icon={Mail}
+          label="Kullanıcı adı (admin için e-posta)"
+          icon={UserRound}
           input={
             <input
-              name="email"
-              type="email"
-              autoComplete="email"
+              name="kimlik"
+              type="text"
+              autoComplete="username"
               required
-              placeholder="ornek@gmail.com"
+              placeholder="berat123"
               className="auth-input"
             />
           }
@@ -96,7 +96,7 @@ export default function Giris({ git, girisYap }) {
             <ShieldCheck size={17} /> Güvenli giriş
           </div>
           <p className="mt-2 text-xs leading-5 text-metinSoft">
-            Hesap bilgileriniz yalnızca bu cihazdaki güvenli oturum için kullanılır.
+            {bulutAktif ? "Girişiniz Supabase Auth ile doğrulanır." : "Demo modu: hesaplar yalnızca bu tarayıcıda saklanır. Canlı yayın için Supabase ayarlayın."}
           </p>
         </div>
 
@@ -119,14 +119,15 @@ export function Kayit({ git, kayitOl }) {
   const [hata, setHata] = useState("");
   const [sifreGoster, setSifreGoster] = useState(false);
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     setHata("");
 
     const fd = new FormData(e.currentTarget);
-    const sonuc = kayitOl({
+    if (fd.get("sifre") !== fd.get("sifreTekrar")) { setHata("Şifreler eşleşmiyor."); return; }
+    const sonuc = await kayitOl({
       ad: fd.get("ad"),
-      email: fd.get("email"),
+      kullaniciAdi: fd.get("kullaniciAdi"),
       sifre: fd.get("sifre"),
     });
 
@@ -161,20 +162,11 @@ export function Kayit({ git, kayitOl }) {
         />
 
         <FormAlan
-          label="E-posta adresi"
-          icon={Mail}
-          input={
-            <input
-              name="email"
-              type="email"
-              required
-              autoComplete="email"
-              placeholder="ornek@gmail.com"
-              className="auth-input"
-            />
-          }
+          label="Kullanıcı adı"
+          icon={UserRound}
+          input={<input name="kullaniciAdi" type="text" required minLength={3} maxLength={24}
+            pattern="[a-zA-Z0-9_]{3,24}" autoComplete="username" placeholder="Örn: berat123" className="auth-input" />}
         />
-
         <FormAlan
           label="Şifre"
           icon={LockKeyhole}
@@ -183,9 +175,9 @@ export function Kayit({ git, kayitOl }) {
               name="sifre"
               type={sifreGoster ? "text" : "password"}
               required
-              minLength="6"
+              minLength="8"
               autoComplete="new-password"
-              placeholder="En az 6 karakter"
+              placeholder="En az 8 karakter"
               className="auth-input auth-input-password"
             />
           }
@@ -201,6 +193,10 @@ export function Kayit({ git, kayitOl }) {
           }
         />
 
+        <FormAlan label="Şifre tekrar" icon={LockKeyhole}
+          input={<input name="sifreTekrar" type={sifreGoster ? "text" : "password"} required minLength={8} autoComplete="new-password" placeholder="Şifrenizi tekrar girin" className="auth-input" />}
+        />
+        <p className="text-xs text-metinSoft">Gerçek e-posta gerekmez. Şifrenizi unutursanız otomatik e-posta ile sıfırlayamazsınız.</p>
         {hata && (
           <div className="rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300">
             {hata}
@@ -239,7 +235,7 @@ function HesapSayfasi({ git, rozet, baslik, aciklama, children }) {
         <div className="relative mx-auto grid min-h-[720px] max-w-7xl overflow-hidden rounded-[32px] border border-white/10 bg-[#101319] shadow-[0_35px_100px_rgba(0,0,0,.45)] lg:grid-cols-[1.08fr_.92fr]">
           <section className="relative hidden min-h-full overflow-hidden lg:block">
             <img
-              src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=90&w=1600&auto=format&fit=crop"
+              src="https://images.unsplash.com/photo-1611859266238-4b98091d9d9b?q=85&w=1600&auto=format&fit=crop"
               alt="RentCar premium araç"
               className="absolute inset-0 h-full w-full object-cover"
             />
@@ -273,7 +269,7 @@ function HesapSayfasi({ git, rozet, baslik, aciklama, children }) {
                 </p>
 
                 <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                  {["Hızlı rezervasyon", "Güvenli ödeme", "7/24 müşteri desteği", "Şeffaf fiyatlandırma"].map((ozellik) => (
+                  {["Hızlı rezervasyon", "Kolay rezervasyon", "7/24 müşteri desteği", "Şeffaf fiyatlandırma"].map((ozellik) => (
                     <div key={ozellik} className="flex items-center gap-2 text-sm font-semibold text-white/85">
                       <CheckCircle2 size={17} className="text-amber" /> {ozellik}
                     </div>
